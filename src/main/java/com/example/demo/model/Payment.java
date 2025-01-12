@@ -4,35 +4,46 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
+
 @Entity
 public class Payment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long paymentId;
-    private BigDecimal amount;
+    private Long id;
+
+    private Double amount;
+
+    private String paymentStatus; // Asegúrate de que esta propiedad esté definida
+
+    @Temporal(TemporalType.DATE) // Asegúrate de usar la anotación correcta
     private Date paymentDate;
-    private String paymentStatus;
 
     @ManyToOne
     private CustomerOrder customerOrder;
 
     public Payment() {}
 
-    public Payment(BigDecimal amount, Date paymentDate, String paymentStatus) {
+    public Payment(Double amount, Date paymentDate, CustomerOrder customerOrder) {
         this.amount = amount;
         this.paymentDate = paymentDate;
-        this.paymentStatus = paymentStatus;
+        this.customerOrder = customerOrder;
     }
 
-    public Long getPaymentId() {
-        return paymentId;
+    // Getters y setters
+    public Long getId() {
+        return id;
     }
 
-    public BigDecimal getAmount() {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
@@ -44,19 +55,19 @@ public class Payment {
         this.paymentDate = paymentDate;
     }
 
-    public String getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(String paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-
     public CustomerOrder getCustomerOrder() {
         return customerOrder;
     }
 
     public void setCustomerOrder(CustomerOrder customerOrder) {
         this.customerOrder = customerOrder;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 }

@@ -31,10 +31,10 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
     @Override
     public CustomerOrder createCustomerOrder(String customerEmail, String customerAddress, List<OrderItem> items) {
         CustomerOrder order = new CustomerOrder(customerEmail, customerAddress, new java.util.Date(), "Pending");
-        order.setItems(items);
         for (OrderItem item : items) {
             item.setCustomerOrder(order);
         }
+        order.getItems().addAll(items);
         return customerOrderRepository.save(order);
     }
 
@@ -83,12 +83,16 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
 
     @Override
     public BigDecimal calculateTotalAmount(Long orderId) {
-        CustomerOrder order = getCustomerOrderById(orderId);
-        BigDecimal totalItems = order.getItems().stream()
-                .map(item -> item.getProductPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        CustomerOrder order = customerOrderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        BigDecimal totalPaid = paymentRepository.calculateTotalPaidByCustomerOrderId(orderId);
-        return totalItems.subtract(totalPaid != null ? totalPaid : BigDecimal.ZERO);
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        for (OrderItem item : order.getItems()) {
+            BigDecimal price = BigDecimal.valueOf(item.getProductPrice());
+            totalAmount = totalAmount.add(price);
+        }
+
+        return totalAmount;
     }
 }

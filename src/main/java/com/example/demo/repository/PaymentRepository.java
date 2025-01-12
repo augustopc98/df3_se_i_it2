@@ -17,8 +17,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.customerOrder.id = :orderId")
     BigDecimal calculateTotalPaidByCustomerOrderId(@Param("orderId") Long orderId);
 
+
+
     @Query("SELECT p FROM Payment p WHERE p.paymentDate BETWEEN :startDate AND :endDate")
     List<Payment> findPaymentsBetweenDates(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
-    List<Payment> findByPaymentStatus(String status);
+    List<Payment> findByPaymentStatus(String paymentStatus);
 }
